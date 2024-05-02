@@ -54,15 +54,15 @@ class CompraService {
     }
 
     public async descargaPDFFebos(febosId: any) {
-
-        console.log("febosId", febosId);
-        console.log('febosId.documentos[0]', febosId.documentos[0]);
-
-        const url = `https://api.febos.cl/produccion/documentos/${febosId.documentos[0].febosId}?json=no&imagen=si&incrustar=si&regenerar=no&tipoImagen=0&xml=no&xmlFirmado=no`;
-        const rutEmpresa = "76008058-6"; // Reemplaza con el RUT de tu empresa
-        const token = "ZmYwNjNkYWUtYTliOS00MTE4LWI2NzQtODlkY2FmNWQzYWE5"; // Reemplaza con tu token
-
         try {
+            console.log("febosId", febosId);
+            console.log('febosId.documentos[0]', febosId.documentos[0]);
+
+            const url = `https://api.febos.cl/produccion/documentos/${febosId.documentos[0].febosId}?json=no&imagen=si&incrustar=si&regenerar=no&tipoImagen=0&xml=no&xmlFirmado=no`;
+            const rutEmpresa = "76008058-6"; // Reemplaza con el RUT de tu empresa
+            const token = "ZmYwNjNkYWUtYTliOS00MTE4LWI2NzQtODlkY2FmNWQzYWE5"; // Reemplaza con tu token
+
+
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -90,6 +90,7 @@ class CompraService {
             }
         } catch (error) {
             console.error("Error fetching PDF data: ", error);
+            return null;
         }
     }
 
@@ -104,6 +105,7 @@ class CompraService {
             // Crea un nuevo documento PDF y agrega solo la primera página
             const pdfDoc = await PDFDocument.create();
             const [firstPage] = await pdfDoc.copyPages(originalPdfDoc, [0]);
+            
             pdfDoc.addPage(firstPage);
 
             // Serializa el nuevo PDF
@@ -111,7 +113,7 @@ class CompraService {
 
             const printerHost = '192.168.5.160';
             const printerPort = 9100;
-            
+
             for (let i = 0; i < 3; i++) {
                 const client = net.createConnection({ host: printerHost, port: printerPort }, async () => {
                     console.log('Conexión establecida con la impresora.');
@@ -137,9 +139,13 @@ class CompraService {
                     console.error('Error de conexión:', err);
                 });
             }
+
+           
+
+            return true;
         } catch (error) {
             console.error("Error al imprimir PDF:", error);
-            throw new Error("Error al imprimir PDF");
+            return false;
         }
     }
 }

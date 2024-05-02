@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model GuiaReimprimir {
+  folio                                 Int      @id
+  fecha                                 DateTime
+  origenId                              String   @db.NVarChar(200)
+  destinoId                             String   @db.NVarChar(200)
+  estado                                Int
+  usuarioCreacion                       String   @db.NVarChar(200)
+  tipo                                  String   @db.NVarChar(20)
+  Local_GuiaReimprimir_destinoIdToLocal Local    @relation("GuiaReimprimir_destinoIdToLocal", fields: [destinoId], references: [nombre], onUpdate: NoAction)
+  Local_GuiaReimprimir_origenIdToLocal  Local    @relation("GuiaReimprimir_origenIdToLocal", fields: [origenId], references: [nombre], onDelete: Cascade)
+}
+
+model Local {
+  nombre                                         String           @id @db.NVarChar(200)
+  GuiaReimprimir_GuiaReimprimir_destinoIdToLocal GuiaReimprimir[] @relation("GuiaReimprimir_destinoIdToLocal")
+  GuiaReimprimir_GuiaReimprimir_origenIdToLocal  GuiaReimprimir[] @relation("GuiaReimprimir_origenIdToLocal")
+}
